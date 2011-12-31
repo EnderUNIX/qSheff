@@ -1,0 +1,118 @@
+#
+# EnderUNIX qSheff configuration file
+#
+# http://www.enderunix.org/qsheff
+#
+# $Id: qsheff.conf-default.in,v 1.4 2006/08/31 12:15:15 simsek Exp $
+#
+
+QSHEFFDIR = /var/qsheff
+LOGFILE = /var/log/qsheff.log
+RIPMIME = "@RIPMIME@"
+
+# Disable this if you are using Bogofilter.
+# The qsheff signature will affect the results!!!
+enable_qsheff_sign = 1
+
+# Set debug level
+# qsheff will log entries which have a debug level less than this value.
+# debug_level = 99 logs everything
+# debug_level = 0  logs only internal errors
+#
+#  level   Identifier   Comment
+# ------- ------------ -----------------------------------------------
+#   0      ERR          Internal error.
+#   2      QUEUE        qSheff passed the mail to qmail-queue.
+#   3      VIRUS        Antivirus software found a virus.
+#   5      CUSTOM       Custom filter program caught a spam pattern.
+#  11      SPAM         Found spam pattern.
+#  13      ATTACH       Caught prohibited attach file.
+#  15      HEADER       Mail header problem.
+#
+debug_level = 99
+
+# When enabled, qSheff doesn't return the "permanantly error"
+# for spam or infected messages.
+enable_spam_blackhole = 0
+enable_virus_blackhole = 0
+
+# 0: Don't panic when any function doesnt work
+#    Just continue to finish job.
+# 1: Spammer and antivirus must work.
+#    Condone other errors.
+# 2: Don't forgive any error.
+#
+# Note that: This feature is not implemented yet.
+paronia_level = 0
+
+# Drop mail if the From: line is empty.
+drop_empty_from = 0
+
+# When set to 1, enables quarantine for spams and virus mails.
+enable_quarantine = 0
+
+# When set to 1, enables ignore list feature.
+# qSheff doesn't perform spam filtering for the addresses in qsheff.ignore
+enable_ignore_list = 1
+
+# When set to 1, enables header rules based on regular expressions.
+# Header rules starts with a leading h: pattern.
+# Check the qsheff.rules
+enable_header_filter = 1
+
+# When set to 1, enables body rules based on regular expressions.
+# Header rules starts with a leading b: pattern.
+# Check the qsheff.rules
+enable_body_filter = 1
+
+# When set to 1, enables attachment filtering.
+# Check the qsheff.attach
+enable_attach_filter = 1
+
+# When set to 1, enables ClamAv antivirus client.
+# qSheff connects to Clamd directly, through a socket file.
+# The socket file must be specified at compile time
+# by --with-clamd-socket option.
+enable_clamd = 1
+
+# When set to 1, enables user defined filtering programs.
+# The CUSTOM_PROG variable must be defined.
+enable_custom_prog = @ENABLE_CUSTOM_PROG@
+
+# Pre-defined variables to pass custom filter program:
+#
+# %%mailfrom%% as email address: source address.
+# %%mailto%% as email address: target address.
+# %%remoteip%% as IP address: remote SMTP server.
+# %%msgfile%% as filename: full path of stored incoming mail.
+# %%tempdir%% as directory path: full of the tempdir includes parts of mail (attachments, body, header etc.)
+#
+# Examples:
+# CUSTOM_PROG = "/usr/bin/myscript -f %%mailfrom%% -t %%mailto%% -r %%tempdir%%"
+# CUSTOM_PROG = "/usr/local/bin/bogofilter --bogofilter-dir=/etc/bogofilter -I %%msgfile%%"
+#
+CUSTOM_PROG = "@CUSTOM_PROG@"
+
+# For the custom program return value 'ret',
+# if CUSTOM_RET_MIN <= ret <= CUSTOM_RET_MAX
+# qSheff will assume the mail has spam content.
+# So qSheff will return 'permanently error'.
+CUSTOM_RET_MIN = 1
+CUSTOM_RET_MAX = 100
+
+# Return value for errors.
+# qSheff assumes that, all nagative return codes indicate a failure.
+# if ret < 0 or ret == CUSTOM_RET_ERR => then return 'temporary error'
+CUSTOM_RET_ERR = -1
+
+# For bogofilter:
+#CUSTOM_RET_MIN = 1
+#CUSTOM_RET_MAX = 1
+#CUSTOM_RET_ERR = 3
+
+# This string will be appended to the end of the custom message.
+# It may be your company or organisation name. Can be maximum 32 characters
+# Custom error patch must be applied and enabled.
+custom_sign = "%%My Company Name%%"
+
+

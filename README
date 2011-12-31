@@ -1,0 +1,37 @@
+
+WHAT is qSheff
+==============
+
+qSheff, is a wrapper for the qmail-queue from EnderUNIX Software Development Team.
+It scans emails against viruses and spams.
+
+After spam and virus checking, qSheff will wake the qmail-queue.
+
+qSheff, is simple and more powerful. It is more than a regular content filter.
+Can perform spam filtering, attachment blocking, virus scanning and nice logging.
+
+HOW to Contribute?
+==================
+
+I would welcome any contribution. How?
+
+- Buy the books by Baris Simsek.
+
+qmail: http://www.acikakademi.com/catalog/qmail/
+FreeBSD: http://www.acikakademi.com/catalog/freebsd/
+
+- Help for documentation.
+
+- Test the software, report bugs.
+
+
+
+
+
+Copyright (C) 2004-2006, Baris Simsek, http://www.enderunix.org/simsek/
+
+EnderUNIX Software Development Team @ Turkey
+http://www.enderunix.org/qsheff/
+
+$Id: README,v 1.2 2007/03/29 17:53:30 simsek Exp $
+

@@ -1,0 +1,33 @@
+
+INSTALL
+=======
+
+# ./configure --help
+
+Basic scenario:
+
+# ./configure --with-clamav --with-clamd-socket=/tmp/clamd
+# make
+# make install
+# /usr/local/etc/qsheff-II/install-wrapper.sh
+
+Another scenario:
+
+# ./configure --with-clamav --with-clamd-socket=/var/run/clamav/clamav.sock --enable-subject-tag \
+--with-custom-prog="/usr/local/bin/bogofilter --bogofilter-dir=/etc/bogofilter -I %%msgfile%%"
+# make
+# make install
+# /usr/local/etc/qsheff-II/install-wrapper.sh
+
+Read the qSheff handbook to see all options.
+
+Note: If you use an old version of qSheff or any other qmail-queue wrapper,
+you should uninstall it before the installation. To uninstall older qsheff:
+
+# /usr/local/etc/qsheff/uninstall-wrapper.sh
+
+
+-b$
+$Id: INSTALL,v 1.2 2006/08/31 11:48:49 simsek Exp $
+
+

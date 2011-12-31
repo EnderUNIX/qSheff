@@ -1,0 +1,472 @@
+    Copyright (c)  2004-2006  Baris Simsek @ EnderUNIX.
+    Permission is granted to copy, distribute and/or modify this document
+    under the terms of the GNU Free Documentation License, Version 1.2
+    or any later version published by the Free Software Foundation;
+    with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+    A copy of the license is included in the section entitled "GNU
+    Free Documentation License".
+
+
+qSheff El Kitabi
+
+$Id: handbook.tr.txt,v 1.1.1.1 2006/07/21 08:59:27 simsek Exp $
+
+Baris Simsek
+
+
+Icindekiler:
+
+ 1. Yasal Aciklamalar
+ 2. qSheff Nedir?
+ 3. Calisma Prensibi
+ 4. Platform
+ 5. Kurulum
+ 6. Yapilandirma
+ 7. Kullanim
+ 8. Destek
+ 9. SSS
+10. Destek
+11. Yazar
+12. Tesekkur
+
+
+
+
+
+1. YASAL ACIKLAMALAR
+
+Bu belge "GNU Free Documentation License" ile lisanslanmistir. Yazar, bu belge-
+nin kullanilmasi sonucu dogacak herhangi bir problem veya hasardan sorumlu tu-
+tulamaz.
+
+2. qSheff NEDIR?
+
+qSheff, qmail e-posta sunucusu ile calisabilen bir icerik tarayicisidir. Ayni
+zamanda baska icerik tarayicilari calistirabilecek bir qmail-queue arayuzudur.
+Spam veya virus iceren mailleri SMTP seviyesinde reddeder. Temiz mailleri kuy-
+ruga iletir.
+
+qSheff, SMTP seviyesinde calistigi icin mailleri daha kuyruga girmeden keserek
+sunucunun yukunu buyuk oranda azaltmaktadir. En yuksek performans icin temiz C
+kod ile yazilmistir.
+
+qSheff, diger alternatiflerinden oldukca fazla ozellik sunmaktadir.
+
+Ozellikleri:
+
+ . ClamAv antivirus. (Dogrudan soket baglantisi ile)
+ . Harici icerik filtreleyici veya antivirus calistirabilme. (custom program)
+ . Harici programlara %%mailfrom%%, %%mailto%%, %%remoteip%%, %%msgfile%% ve
+   %%tempdir%% seklinde dahili degiskenleri parametre olarak aktarabilme.
+ . Duzenli ifade destekli baslik ve govde filtreleme.
+ . Eklenti filtreleme.
+ . Istisna listesi ile tanimli kaynaklardn gelen emailleri koruma (ignore list)
+ . Spam ve virusler icin karantina.
+ . Butun trafigi diske yedekleme.
+ . MUA'larin kendi filtrelerini yazabilmeleri icin konu etiketlemesi.
+ . Viruslu maillerin icerigini silip konu etiketi ve tanimli bir mesajla alici-
+   ya dagitma.
+ . Bozuk baslikli mailleri engelleme.
+ . Tek satirlik detayli log tutabilme.
+ . Dosyaya log tutma veya syslog'a gonderme ozelligi.
+ . Gelismeye acik, temiz C kod.
+ . Kolay hata tespit ve debug etme imkani.
+ . qmailqueue yamasi ile qmail-queue sembolik bagi ile calisabilme.
+ . custom error yama destegi. Kullanici tanimli hata mesajlari dondurebilme, 
+   spami yakalayan kurali veya yakalanan virusun adini dondurebilme.
+ . Icerden disari cikan mailler icin filtrelemeyi pasif edebilme.
+ . DoS saldirilarina karsi temel onlemleri alabilme.
+
+3. CALISMA PRENSIBI
+
+Herhangi bir eklenti olmadan qmail asagidaki sekilde calisir:
+
+SMTP  --> tcpserver --> qmail-smtpd --
+                                      | 
+                                       --> qmail-queue --> 
+                                      |
+Local --> MUA --> qmail-inject -------
+
+
+qSheff kurulu olan qmail sistemin calismasi su sekildedir:
+
+SMTP  --> tcpserver --> qmail-smtpd --
+                                      | 
+                                       --> qSheff --> qmail-queue --> 
+                                      |
+Local --> MUA --> qmail-inject -------
+
+qmail resmi: http://www.nrg4u.com/qmail/the-big-qmail-picture-103-p1.gif
+
+qmail'de mail kuyruga iki yol ile girebilir: 1. Mail uzak SMTP sunucudan geli-
+yorsa qmail-smtpd ile, 2. Mail yerel kullanicidan geliyorsa qmail-inject ile.
+Her iki durumda da mail qmail-queue araciligi ile kuyruga girer. qSheff, bu or-
+tak noktada yer alarak tum maillerin kendisine gelmesini saglar. qmail-smtpd ve
+qmail-inject ile qmail-queue arasina, qSheff'i sokmanin iki yolu vardir.
+
+1. qmail-queue programcigi qmail-queue.orig seklinde farkli isimde tasinir ve
+   qmail-queue, qSheff'e linklenir.
+
+   # mv /var/qmail/bin/qmail-queue /var/qmail/bin/qmail-queue.orig
+   # ln -s /var/qmail/bin/qmail-qsheff /var/qmail/bin/qmail-queue
+
+   Bundan sonra qmail-smtpd veya qmail-inject, qmail-queue'yu calistirmak iste-
+   diginde, sembolik link vasitasiyla qSheff calisir ve standart giristen maili
+   teslim alir. Kendi islemlerini bitirdikten sonra qmail-queue.orig'i calisti-
+   rip standart cikistan maili kuyruga verir.Bu sekilde mail yoluna devam eder.
+
+2. qmail'e, qmailqueue yamasi uygulanir. Bu yamayi qSheff dagitiminin icinde
+   contrib/ dizininde bulabilirsiniz. Bu yama ile qmail QMAILQUEUE cevre degis-
+   kenine bakar. Orada belirtilen programi calistirir. Eger QMAILQUEUE cevre
+   degiskeni /var/qmail/bin/qmail-qsheff olarak atanirsa qmail-smtpd veya
+   qmail-inject, dogrudan qSheff'i calistirir. qSheff kendi islemlerini bitir-
+   dikten sonra qmail-queue'yu calistirip maili standart cikistan kuyruga ve-
+   rir. Bu sekilde mail yoluna devam eder.
+
+qSheff, kendi islemlerini bitirtikten sonra yapilandirmaya gore asagidaki dav-
+ranislardan birini gosterir.
+
+1. Spam veya virus bulmustur.
+
+   a) Subject tag veya virus tag aktif edilmisse, konu etiketlenir ve mail kul-
+   laniciya teslim edilir. Virus bulunmus ise mail icerigi tamamen temizlenip
+   durumu aciklayici bir cumle ile mail kullaniciya teslim edilir.
+
+   b) Subject tag veya virus tag aktif degilse kullaniciya PERMANENTLY REJECTED
+   hatasi donulur. Eger "custom error" yamasi yuklu ise kullanici tanimli bir
+   hata mesaji donulur. Eger karantine aktif edilmisse mesaj ayni zamanda disk
+   uzerinde /var/qsheff/quarantine dizinine saklanir.
+
+2. Hata olusmustur.
+
+   Bu durumda TEMPORARY REJECTED hatasi donulur.
+
+3. enable_blackhole = 1 yapilmistir.
+
+   Bu durumda yukaridaki her iki durumda da karsiya hicbir mesaj verilmez.
+
+4. Mail temizdir.
+
+   Mail kuyruga teslim edilir. 
+
+
+
+4. PLATFORM
+
+qSheff degisik UNIX platformlarda calisacak sekilde yazilmistir. Asagidaki sis-
+temler uzerinde denenip calistirilmistir.
+
+Solaris 5.8 (gcc version 3.4.2)
+OpenBSD 3.5 (gcc version 3.3.2)
+FreeBSD 4.10 (gcc version 2.95.4 20020320)
+FreeBSD 5.4 (gcc version 3.4.2)
+GNU istanbuLX/Linux (gcc version 3.4.2)
+Red Hat Enterprise Linux ES release 3 (gcc version 3.2.3 20030502)
+GNU/Linux Debian (gcc 3.3.5, Debian 1:3.3.5-12)
+
+
+5. KURULUM
+
+qSheff kurmak oldukca kolaydir. Kurulumdan once varsa diger icerik filtreleyi-
+cileri (eski surum qSheff, RAV, simscan, mailscanner...) kaldirin. Bu durumda
+qmail-queue'nun su sekilde gorunmesi gerekli.
+
+# ls -l /var/qmail/bin/qmail-queue
+-rws--x--x 1 qmailq qmail 12396 Nov 28 13:18 /var/qmail/bin/qmail-queue
+
+qSheff'in calisabilmesi icin PLDaniels'in 'ripmime' yaziliminin kurulmus olmasi
+gerekir. Ripmime, e-postayi parcalayarak baslik, govde ve ekler olarak dosyala-
+ra ayirir. Bu yazilimi http://www.pldaniels.com/ripmime/ adresinden indirebi-
+lirsiniz.
+
+# fetch http://pldaniels.com/ripmime/ripmime-1.4.0.6.tar.gz
+ripmime-1.4.0.6.tar.gz                        100% of  159 kB   31 kBps
+
+# tar -zxf ripmime-1.4.0.6.tar.gz
+# cd ripmime-1.4.0.6
+# make
+# make install
+# ripmime -V
+v1.4.0.6 - December 12, 2005 (C) PLDaniels http://www.pldaniels.com/ripmime
+
+Antivirus secmeli bir ozelliktir. qSheff diger icerik tarayicilardan farkli o-
+larak ClamAv'a dogrudan soket yoluyla baglanip maili taratabilir. 'clamdscan'
+gibi istemci yazilimlari calistirmaz. Bu yolla daha az sistem kaynagi tuketilir
+ve daha performansli filtreleme yapilir. ClamAv disindaki virus tarayicilari
+veya icerik filtreleyicileri kullanmak icin 'custom program' ozelligi kullani-
+lir. Bu ozellik hakkinda asagida detayli bilgi verilmistir.
+
+ClamAv, http://www.clamav.net/ adresinden indirilip kurulabilir.
+
+Antivirus yazilimlarinin kurulumu ve yapilandirilmasi icin kendi belgelerine
+bakin.
+
+qSheff resmi sitesinden indirilabilir.
+
+http://www.enderunix.org/qsheff/
+
+# fetch http://www.enderunix.org/qsheff/qsheff-II-2.1.tar.gz
+qsheff-II-2.1.tar.gz                          100% of  129 kB 5208  Bps 00m00s
+
+# tar -zxf qsheff-II-2.1.tar.gz
+# cd qsheff-II-2.1
+
+Kurulum seceneklerini gormek icin:
+
+# ./configure --help
+  --enable-debug                 Enable debug messages
+  --disable-local-users          Disable the filters for local users
+  --enable-syslog                Enable syslog messages
+  --enable-backup                Enable backup
+  --enable-spam-tag              Enable Spam Tagging
+  --enable-virus-tag             Enable virus tagging
+  --enable-custom-error          Enable the custom error patch
+  --enable-qq-patch              Enable qmailqueue patch
+
+  --with-max-bodyline            Maximum number of lines to filter, default=40
+  --with-maxfiles                Maximum numbers of files in a dir.
+  --with-qmailgroup              Define qmail group, default=qmail
+  --with-qmaildir                Define qmail directory, default=/var/qmail
+  --with-clamav                  Enable ClamAv
+  --with-clamd-socket            Path to clamd socket, default=/tmp/clamd
+  --with-custom-prog             Enable User Defined Program, check qsheff.conf
+
+Bu ozelliklerden istediginizi kullanabilirsiniz.
+
+Tipik bir kurulum su sekilde olacaktir:
+
+# ./configure --disable-local-users --with-clamav \
+    --with-clamd-socket=/var/run/clamav/clamd
+
+Secenekler hakkinda detay asagida verilmistir.Kuruluma su sekilde devam edilir:
+
+# make && make install
+# /usr/local/etc/qsheff-II/install-wrapper.sh
+
+Kurulumdan sonra /var/qmail/bin dizini su sekilde gorunmeli:
+
+-r-s--x--x  1 root    qmail  36766 17 May 16:57 qmail-qsheff
+lrwxr-xr-x  1 root    qmail     27 16 May 15:28 qmail-queue -> qmail-qsheff
+-r-s--x--x  1 qmailq  qmail  12396  2 May 15:43 qmail-queue.orig
+
+Ozellikler:
+
+  --enable-debug                 Enable debug messages
+    Herhangi bir sorun durumunda ekrana debug bilgilerini basmak icin kulla-
+    nilir.
+  --disable-local-users          Disable the filters for local users
+    qSheff ontanimli olarak yerel kullanicilari da filtreler. Ancak kucuk ku-
+    rumlar icin buna gerek yoktur. Bu secenekle pasif edilebilir.
+  --enable-syslog                Enable syslog messages
+    Gunluk kayitlarinin qsheff.log'un yaninda syslog'a da gonderilmesini sag-
+    lar. Bu secenekle kayitlar uzaktaki bir log sunucuya alinabilir.
+  --enable-backup                Enable backup
+    Butun gelen/giden mail trafiginin loglanmasini saglar.
+  --enable-spam-tag              Enable Spam Tagging
+    Spamli mailleri reddetmek yerine konularini etiketleyerek kullanicilara
+    dagitilmasini saglar. Kullanicilar mail istemcilerinde filtreler yazarak
+    etiketli maillerin bir klasorde toplanmasini ve temiz maillerden ayrilma-
+    sini saglayabilirler.
+  --enable-virus-tag             Enable virus tagging
+    Viruslu mailin, icerigi silinerek kullaniciya dagitilmasini saglar. Iceri-
+    gi degistirilip virus hakkinda uyari mesaji eklenir. Bu mesaj VIRI_CENSORED
+    adiyla src/main.h'da tanimlidir. Bu mesaja qsheff.conf'taki custom_sign ta-
+    nimi otomatik eklenir.
+  --enable-custom-error          Enable the custom error patch
+    qmail kullanicilara spam vey virus oldugunda normalde 'permanently error'
+    doner. Karsi taraf icin cogu kez bu mesaj fazla anlam icermez. Bu ozellik
+    custom-error yamasini aktif etmek icindir. Ancak bundan once yamanin qmail'
+    e uygulanmis olmasi gerekir. Mesajlar src/main.h dosyasinda DEFAULTMSG,
+    SPAMMSG ve VIRUSMSG olarak tanimlanmistir. Mesajlara spam kelimesi veya
+    virus adi otomatik eklenir.
+  --enable-qq-patch              Enable qmailqueue patch
+    qmail-queue yamasini aktif eder. Bundan once yamanin uygulanmis olmasi ge-
+    rekir. Bu yama '3. CALISMA PRENSIBI' basliginda anlatilmistir. Bu yama ile
+    qSheff sembolik link vasitasiyla degil de QMAILQUEUE cevre degiskeni ile 
+    tetiklenir. Bu degisken /etc/tcp.smtp dosyasinda atanir.
+
+  --with-max-bodyline            Maximum number of lines to filter, default=40
+    qSheff'in mailde  filtreleyecegi azami satir sayisini sinirlandirir. Onta-
+    nimli degeri 40'tir. Bu ozellik, buyuk boyutlu mailler gonderilerek sisteme
+    DoS atagi yapilmasina karsidir. Spam kelimeler genelde mailin ilk 10 sati-
+    rinda kendini gosterir. Tum govdeyi taramaya gerek yoktur.
+  --with-maxfiles                Maximum numbers of files in a dir.
+    --enable-backup ozelligini aktif etmisseniz qSheff tum mail trafigini kayit
+    edecektir. Her isletim sisteminin bir dizinde olabilecek azami dosya sayisi
+    siniri vardir. Bu sinir tanimlanirsa qSheff, bir dizin doldugunda diger di-
+    zine gececektir. Ontanimli degeri 32000'dir.
+  --with-qmailgroup              Define qmail group, default=qmail
+    qmail eger 'qmail' disinda bir grup id ile kurulmussa belirtilmelidir.
+  --with-qmaildir                Define qmail directory, default=/var/qmail
+    qmail eger /var/qmail disinda bir yere kurulmussa belirtilmelidir.
+  --with-clamav                  Enable ClamAv
+    ClamAv antivirus yazilimini aktif eder. Eger ClamAv /opt/clamav gibi stan-
+    dart olmayan bir dizine kurulmussa parametre olarak bu dizin belirtilmeli-
+    dir. Aksi takdirde derlenirken ClamAv kutuphane fonksiyonlari hata verir.
+  --with-clamd-socket            Path to clamd socket, default=/tmp/clamd
+    qSheff, ClamAv daemon'a dogrudan UNIX soket ile baglanir. Soketin yolu eger
+    /tmp/clamd degilse bu parametre ile belirtilmelidir. Diger bir cozum ise
+    clamd.conf dosyasindan LocalSocket degiskenini /tmp/clamd yapmaktir.
+  --with-custom-prog             Enable User Defined Program, check 
+    Kullanici kendi istedigi bir program veya betigi, qSheff'e calistirtabilir.
+    3rd party yazilim ve antivirusler, kendi gelistirdiginiz betikler bu sekil-
+    de calistirilir. Parametre olarak programin veya betigin tam yolu ve para-
+    metreleri verilir. Bu programa parametre olarak %%mailfrom%%, %%mailto%%,
+    %%remoteip%%, %%msgfile%% ve %%tempdir%% degiskenleri verilebilir. Paramet-
+    reler ve programin tam yolu daha sonra qsheff.conf'tan degistirilebilir.
+
+
+6. YAPILANDIRMA
+
+qSheff yapilandirma dosyalari kurulum dizini altinda etc/qsheff-II dizinindedir
+
+qsheff.conf:
+
+QSHEFFDIR: qSheff dizini. backup, quarantine, spool, tmp dizinlerini icerir.
+LOGFILE: Gunluklerin tutulacagi dosyayi belirler.
+RIPMIME: Ripmime'in tam yolunu belirtir. configure asamasinda qSheff tarafindan
+otomatik tespit edilerek buraya yazilir.
+debug_level: Gunluk kayitlarinin yazilma seviyesi. Ontanimli degeri 99'dur ve
+butun kayitlarin yazilmasini saglar.Bu degeri 14 yaparsaniz HEADER debug bilgi-
+leri yazilmayacaktir.
+   0      ERR        
+   2      QUEUE    
+   3      VIRUS   
+   5      CUSTOM 
+  11      SPAM  
+  13      ATTACH 
+  15      HEADER
+enable_blackhole: 1 yapilirsa hata, spam veya virus durumlarinda gondericiye
+hata donulmez.
+paronia_level: Henuz uygulanmadi.
+drop_empty_from: 1 yapilirsa From basligi bos olan mailleri qSheff reddeder.
+enable_quarantine: 1 yapilirsa viruslu ve spamli mailler karantinaya alinir.
+enable_ignore_list: 1 yapildiginda filtrelerden haric tutulmak istenen mail ve-
+ya ip'lerin tutuldugu listeyi aktif eder.
+enable_header_filter: 1 yapildiginda baslik filtresi aktif olur.
+enable_body_filter: 1 yapildiginda govde filtresi aktif olur.
+enable_attach_filter: 1 yapildiginda eklenti filtresi aktif olur.
+enable_clamd: 1 yapildiginda ClamAv taramasi aktif olur.
+enable_custom_prog: 1 yapildiginda harici program calistirmak aktif olur.
+CUSTOM_PROG: Harici programin tam yolu ve parametrelerini belirtir.
+CUSTOM_RET_MIN: Harici programin eslestirme yaptiginda donebilecegi asgari de-
+geri gosterir.
+CUSTOM_RET_MAX:  Harici programin eslestirme yaptiginda donebilecegi azami de-
+geri gosterir.
+
+Ornegin virus buldugunda 5, spam buldugunda 9 gonderen bir yazilim icin asgari
+deger 5, azami deger 9 girilebilir.
+
+CUSTOM_RET_ERR: Harici programin hata yaptiginda dondugu degerdir.
+custom_sign: Virus etiketlemesi aktif edildiginde uyari olarak gonderilecek ma-
+ile eklenecek kuruma ait imzadir. Bu imza ayni zamanda 'custom error' yamasi
+tarafindan gondericiye gonderilecek bilgi mesajina da eklenir.
+
+qsheff.attach: Eklenti filtresinin eslestirmek icin arayacagi uzantilari icerir
+qsheff.ignore: Filtrelerden haric tutulacak domain veya IP'lerin listesini ice-
+rir. Duzenli ifade destekli kurallar yazilabilir. Bu kurallar gonderen sunucu-
+nun IP adresi ve gonderici e-posta adresi ile eslestirilmeye calisilir.
+qsheff.rules: qSheff kurallarinin bulundugu dosya. 'h' ile baslayanlar baslik
+kurali, 'b' ile baslayanlar govde kuralidir. (kural1)(kural2) seklinde yanyana
+yazilan kurallar, mantiksal AND islemine sokulur. Alt alta olan kurallar ise
+mantiksal OR islemine sokulur.
+
+
+7. KULLANIM
+
+qSheff kurulduktan sonra herseyin yolunda gittiginden emin olmak icin log dos-
+yasi incelenmelidir.
+
+# tail -f /var/log/qsheff.log
+04/05/2006 19:12:39: [qSheff] SPAM, queue=q1146759159-792935-50066, relayfrom=
+88.247.172.183, from=`simsek@enderunix.org', to=`simsek@acikakademi.com', subj
+=`viagra', size=575, spam=`Subject: viagra', rule=`(Subject:)([vV]iagra)'
+
+17/05/2006 16:59:50: [qSheff] VIRUS, queue=q1147899588-883933-43385, recvfrom=
+83.26.32.122, from=`olago@neostrada.pl', to=`biwi@turx.com', subj=`Re: Merry 
+Christmas!', size=19082, virus=`Worm.Zafi.D',
+
+17/05/2006 17:03:39: [qSheff] HEADER, queue=q1147899819-136265-43522, recvfrom=
+84.50.27.182, from=`', to=`', subj=`', size=0,,
+
+Eger yerel kullanicilaricin filtreler pasif edilmisse, sunucu uzerinden yapaca-
+giniz denemeler gunluk dosyasina dusmeyecektir.
+
+Eger drop_empty_from 1 ise, From: satiri yazmadan yaptiginiz denemeler HEADER
+etiketi ile loglanip red edilecektir.
+
+Eger qSheff, maili qmail-queue'ya verdikten sonra hata olusmus ise gunluk dos-
+yasinda exitcode ile qmail-queue'nun cikis degeri yazilacaktir.
+
+17/05/2006 16:24:51: [qSheff] QUEUE, queue=q1147897465-631231-42376, recvfrom=
+83.17.118.150, from=`edhzovsc@queretaro.com', to=`alii@linuxxproggramlama.com',
+subj=`Fw[36]: Hi !..', size=10240, error=`', exitcode=54
+
+
+8. DESTEK
+
+qSheff ile ilgili sorularinizi dogrudan mail listesine sorun. Uye olmak icin
+qsheff-subscribe at lists.enderunix.org adresine bos bir email atip size gelen
+onay mailine yanit verin. Liste mail adresi: qsheff at lists.enderunix.org'dir.
+
+Liste arsivi http://news.gmane.org/gmane.mail.qmail.qsheff adresinde tutulmak-
+tadir. Soru sormadan once liste arsivini ve bu belgeyi dikkatlice okuyun. Her
+versiyon ile beraber gelen INSTALL ve UPGRADE dosyalarini da okumayi ihmal et-
+meyin.
+
+Liste ve belgeleri kullanarak cozemediginiz sorunlar icin yazarla yazisabilir-
+siniz.
+
+Ticari firmalar icin ucret karsiliginda ozel gelistirme yapilir.
+
+
+9. SSS
+
+Eksik
+
+
+10. DESTEK
+
+Projeye asagidaki yollardan biri ile katkida bulunabilirsiniz:
+
+ . Yazarin kitap ihtiyacini karsilayin.
+ . http://www.acikakademi.com adresinden kitap siparis ederek yazara maddi des-
+   tek verin.
+ . qSheff'i kullanip hata ve istekleri yazara bildirin.
+ . qSheff'i basarili bir sekilde yuklemisseniz uname .a ve gcc .v bilgileri ile
+   birlikte kullandiginiz qSheff versiyonunu yazara bildirin.
+ . Bu belgeyi kendi dilinize cevirin.
+
+
+11. YAZAR
+
+qSheff, Baris Simsek (simsek at enderunix org) tarafindan gelistirilmistir. Bu
+yazilimin icinde baska gelistiricilerin kucuk yamalari vardir. Bunlar THANKS
+dosyasinda ayrica belirtilmistir.
+
+
+12. TESEKKUR
+
+Arkadasliklari icin EnderUNIX'e
+Geri bildirimleri icin tum kullanicilara tesekkur ederim.
+
+testleri icin:
+- Huseyin Yuce
+- Omer Faruk Sen
+- Afsin Taskiran
+
+ingilizce belgelendirme icin:
+- Doruk Fisek
+- Umut Demirhan
+- Adnan Sancak
+
+qSheff'e kucuk yamalarla kod ile katkida bulunanlarin listesi:
+- Atilim Boy <aboy at enderunix.org>
+- Stephan Bielmann <stephan at stean.ch>
+
+
+
+
+$Id: handbook.tr.txt,v 1.1.1.1 2006/07/21 08:59:27 simsek Exp $
+
+

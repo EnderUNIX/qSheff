@@ -1,0 +1,88 @@
+/* src/qsheff-config.h.in.  Generated from configure.in by autoheader.  */
+
+/* qsheff.attach full path */
+#undef ATTACHFILE
+
+/* Backup Enabled */
+#undef BACKUP_ALL
+
+/* qsheff.conf full path */
+#undef CFGFILE
+
+/* clamd socket */
+#undef CLAMD_SOCKET
+
+/* Return custom messages to senders */
+#undef CUSTOM_ERROR
+
+/* use clamav */
+#undef ENABLE_CLAMAV
+
+/* Enable custom program */
+#undef ENABLE_CUSTOM_PROG
+
+/* Enable the filters for local users */
+#undef ENABLE_LOCAL_USERS
+
+/* Enable syslog messages */
+#undef ENABLE_SYSLOG
+
+/* Define to 1 if you have the `strcasestr' function. */
+#undef HAVE_STRCASESTR
+
+/* qsheff.ignore full path */
+#undef IGNLISTFILE
+
+/* Mailer-daemon email address */
+#undef MAILERDAEMON
+
+/* max body lines */
+#undef MAXBODYLINE
+
+/* max files */
+#undef MAX_FILES
+
+/* there is no strcasestr */
+#undef NOSTRCASESTR
+
+/* Name of package */
+#undef PACKAGE
+
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
+
+/* qmail root directory */
+#undef QMAILDIR
+
+/* use qmailqueue patch */
+#undef QMAILQUEUE
+
+/* qsheff.rules full path */
+#undef RULEFILE
+
+/* Spam tag enabled */
+#undef SPAM_TAGGING
+
+/* Define to 1 if you have the ANSI C header files. */
+#undef STDC_HEADERS
+
+/* Version number of package */
+#undef VERSION
+
+/* Virus tag enabled */
+#undef VIRUS_TAGGING
+
+/* Enable debug mode */
+#undef _DEBUG_

@@ -1,0 +1,555 @@
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=Windows-1254">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 11">
+<meta name=Originator content="Microsoft Word 11">
+<link rel=File-List href="spamass-qsheff_files/filelist.xml">
+<title>Using Spamassassin with Qsheff</title>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>Barış Şimşek</o:Author>
+  <o:LastAuthor>Barış Şimşek</o:LastAuthor>
+  <o:Revision>2</o:Revision>
+  <o:TotalTime>4</o:TotalTime>
+  <o:Created>2005-06-26T19:27:00Z</o:Created>
+  <o:LastSaved>2005-06-26T19:31:00Z</o:LastSaved>
+  <o:Pages>1</o:Pages>
+  <o:Words>799</o:Words>
+  <o:Characters>4558</o:Characters>
+  <o:Company>EnderUNIX STD @ Tr</o:Company>
+  <o:Lines>37</o:Lines>
+  <o:Paragraphs>10</o:Paragraphs>
+  <o:CharactersWithSpaces>5347</o:CharactersWithSpaces>
+  <o:Version>11.5606</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:SpellingState>Clean</w:SpellingState>
+  <w:GrammarState>Clean</w:GrammarState>
+  <w:HyphenationZone>21</w:HyphenationZone>
+  <w:ValidateAgainstSchemas/>
+  <w:SaveIfXMLInvalid>false</w:SaveIfXMLInvalid>
+  <w:IgnoreMixedContent>false</w:IgnoreMixedContent>
+  <w:AlwaysShowPlaceholderText>false</w:AlwaysShowPlaceholderText>
+  <w:BrowserLevel>MicrosoftInternetExplorer4</w:BrowserLevel>
+ </w:WordDocument>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:LatentStyles DefLockedState="false" LatentStyleCount="156">
+ </w:LatentStyles>
+</xml><![endif]-->
+<style>
+<!--p
+	{widows: 2;
+	orphans: 2 ;}
+p.CTL
+	{so-language: ar-SA ;}
+
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";
+	color:black;}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;
+	text-underline:single;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:blue;}
+p
+	{mso-margin-top-alt:auto;
+	margin-right:0cm;
+	margin-bottom:5.95pt;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";
+	color:black;}
+p.western, li.western, div.western
+	{mso-style-name:western;
+	mso-margin-top-alt:auto;
+	margin-right:0cm;
+	margin-bottom:5.95pt;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";
+	color:black;}
+p.cjk, li.cjk, div.cjk
+	{mso-style-name:cjk;
+	mso-margin-top-alt:auto;
+	margin-right:0cm;
+	margin-bottom:5.95pt;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";
+	color:black;}
+p.ctl, li.ctl, div.ctl
+	{mso-style-name:ctl;
+	mso-margin-top-alt:auto;
+	margin-right:0cm;
+	margin-bottom:5.95pt;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";
+	color:black;}
+span.SpellE
+	{mso-style-name:"";
+	mso-spl-e:yes;}
+@page Section1
+	{size:595.3pt 841.9pt;
+	margin:70.85pt 70.85pt 70.85pt 70.85pt;
+	mso-header-margin:35.4pt;
+	mso-footer-margin:35.4pt;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+<!--[if gte mso 10]>
+<style>
+ /* Style Definitions */
+ table.MsoNormalTable
+	{mso-style-name:"Table Normal";
+	mso-tstyle-rowband-size:0;
+	mso-tstyle-colband-size:0;
+	mso-style-noshow:yes;
+	mso-style-parent:"";
+	mso-padding-alt:0cm 5.4pt 0cm 5.4pt;
+	mso-para-margin:0cm;
+	mso-para-margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman";
+	mso-ansi-language:#0400;
+	mso-fareast-language:#0400;
+	mso-bidi-language:#0400;}
+</style>
+<![endif]-->
+<meta name=AUTHOR content=Administrator>
+<meta name=CREATED content="20050626;17470000">
+<meta name=CHANGEDBY content="Barış Şimşek">
+<meta name=CHANGED content="20050626;22251681">
+</head>
+
+<body lang=TR link=blue vlink=blue style='tab-interval:35.4pt'>
+
+<div class=Section1>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><b><span
+lang=EN-US style='font-size:16.0pt;mso-ansi-language:EN-US'>Using <span
+class=SpellE>Spamassassin</span></span></b><b><span style='font-size:16.0pt'>
+with Qsheff </span></b></p>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'>It is assumed
+that you have installed and configured qsheff and to use spamassassin with
+qsheff follow these instructions:</p>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'>First install
+Spamassasin itself. On FreeBSD issue the following commands:<br
+style='mso-special-character:line-break'>
+<![if !supportLineBreakNewLine]><br style='mso-special-character:line-break'>
+<![endif]></p>
+
+<table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=615
+ style='width:461.25pt;mso-cellspacing:0cm;border:outset black 1.0pt;
+ mso-border-alt:outset black .75pt;mso-padding-alt:5.25pt 5.25pt 5.25pt 5.25pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;mso-yfti-lastrow:yes'>
+  <td width=599 valign=top style='width:449.25pt;border:inset black 1.0pt;
+  mso-border-alt:inset black .75pt;padding:5.25pt 5.25pt 5.25pt 5.25pt'>
+  <p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  style='font-size:11.0pt;font-family:"Courier New"'># cd
+  /usr/ports/mail/p5-Mail-Spamassassin<br>
+  # make install clean</span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'>In
+installation step an ncurses menu appears that you can choose the compilation
+options. Since we are going to use spamassassin in the same server that we are running
+qsheff (the mail server itself) we can install spamassassin without SSL support
+but the choice is yours. Spamassassin also installs razor which can be found in
+/usr/ports/mail/razor-agents. If you don’t choose to install razor in
+spamassasin installation you can later install this port. </p>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'>After
+installing spamassassin for a complete spamassassin environment we will install
+pyzor. Pyzor (http://pyzor.sourceforge.net/) is a collaborative spam tool using
+digest of the spam that has sent. With every mail that is tagged as spam pyzor
+makes checksums of the different sections of email. If an incoming mail ,after
+checking, has the same checksum than it is tagged as spam. To install and
+configure pyzor issue following commands.</p>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><o:p>&nbsp;</o:p></p>
+
+<table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=615
+ style='width:461.25pt;mso-cellspacing:0cm;border:outset black 1.0pt;
+ mso-border-alt:outset black .75pt;mso-padding-alt:5.25pt 5.25pt 5.25pt 5.25pt'>
+ <COL WIDTH=599>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;mso-yfti-lastrow:yes'>
+  <td width=599 valign=top style='width:449.25pt;border:inset black 1.0pt;
+  mso-border-alt:inset black .75pt;padding:5.25pt 5.25pt 5.25pt 5.25pt'>
+  <p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  style='font-size:11.0pt;font-family:"Courier New"'># cd /usr/ports/mail/pyzor</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'># make install clean</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'># pyzor discover</span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'>The last
+command downloads a list of pyzor servers.</p>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'>As for the
+last software we are going to download dcc (<u><span style='color:blue'><a
+href="http://www.rhyolite.com/anti-spam/dcc/">http://www.rhyolite.com/anti-spam/dcc/</a></span></u>)
+. Dcc allows individuals receiving a single mail message to determine that many
+other people have received essentially identical copies of the message and so
+reject or discard the message. To install dcc issue these commands.</p>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><o:p>&nbsp;</o:p></p>
+
+<table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=615
+ style='width:461.25pt;mso-cellspacing:0cm;border:outset black 1.0pt;
+ mso-border-alt:outset black .75pt;mso-padding-alt:5.25pt 5.25pt 5.25pt 5.25pt'>
+ <COL WIDTH=599>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;mso-yfti-lastrow:yes'>
+  <td width=599 valign=top style='width:449.25pt;border:inset black 1.0pt;
+  mso-border-alt:inset black .75pt;padding:5.25pt 5.25pt 5.25pt 5.25pt'>
+  <p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  style='font-size:11.0pt;font-family:"Courier New"'># cd /usr/ports/mail/dcc-dccd</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'># make install clean</span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'>We have
+installed all the required softwares for spamassassin. Next we should configure
+spamassassin itself. The configuration file for spamassassin on FreeBSD is
+/usr/local/etc/mail/spamassassin/local.cf. Here is a sample local.cf that you
+can use</p>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><o:p>&nbsp;</o:p></p>
+
+<table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=615
+ style='width:461.25pt;mso-cellspacing:0cm;border:outset black 1.0pt;
+ mso-border-alt:outset black .75pt;mso-padding-alt:5.25pt 5.25pt 5.25pt 5.25pt'>
+ <COL WIDTH=599>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;mso-yfti-lastrow:yes'>
+  <td width=599 valign=top style='width:449.25pt;border:inset black 1.0pt;
+  mso-border-alt:inset black .75pt;padding:5.25pt 5.25pt 5.25pt 5.25pt'>
+  <p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  style='font-size:11.0pt;font-family:"Courier New"'>trusted_networks
+  192.168.1.</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'>required_hits 8.0</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'>whitelist_from
+  *freebsd.org *lists.enderunix.org</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'>dns_available yes</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'>report_header 1</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'>rewrite_header
+  subject SPAMMSG</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'>#skip_rbl_checks 1</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'>pyzor_path
+  /usr/local/bin/pyzor</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'>pyzor_max 2</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'>add_header all DCC
+  _DCCB_: _DCCR_</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'>use_razor2 1</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'>use_pyzor 1</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'>add_header all Pyzor
+  _PYZOR_</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'>score PYZOR_CHECK
+  5.00</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'>use_auto_whitelist</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'>#ok_languages en tr</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'>#ok_locales en tr</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'>#use_bayes 1</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'>dcc_path
+  /usr/local/bin/dccproc</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'>use_dcc 1</span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'>Then to
+activate spamassassin at startup edit /etc/rc.conf like that:</p>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><o:p>&nbsp;</o:p></p>
+
+<table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=615
+ style='width:461.25pt;mso-cellspacing:0cm;border:outset black 1.0pt;
+ mso-border-alt:outset black .75pt;mso-padding-alt:5.25pt 5.25pt 5.25pt 5.25pt'>
+ <COL WIDTH=599>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;mso-yfti-lastrow:yes'>
+  <td width=599 valign=top style='width:449.25pt;border:inset black 1.0pt;
+  mso-border-alt:inset black .75pt;padding:5.25pt 5.25pt 5.25pt 5.25pt'>
+  <p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  style='font-size:11.0pt;font-family:"Courier New"'>#spamd</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'>spamd_enable=&quot;YES&quot;</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'>spamd_flags=&quot;-d
+  -v -s local4 -u vpopmail&quot;</span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><br>
+You can ommit spamd_flags but to run spamassassin with vpopmail this flag is required.
+Now we can start spamassassin manually</p>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><o:p>&nbsp;</o:p></p>
+
+<table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=615
+ style='width:461.25pt;mso-cellspacing:0cm;border:outset black 1.0pt;
+ mso-border-alt:outset black .75pt;mso-padding-alt:5.25pt 5.25pt 5.25pt 5.25pt'>
+ <COL WIDTH=599>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;mso-yfti-lastrow:yes'>
+  <td width=599 valign=top style='width:449.25pt;border:inset black 1.0pt;
+  mso-border-alt:inset black .75pt;padding:5.25pt 5.25pt 5.25pt 5.25pt'>
+  <p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  style='font-size:11.0pt;font-family:"Courier New"'>#
+  /usr/local/etc/rc.d/sa-spamd.sh start</span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'>And to see the
+logs of spamd process edit syslogd.conf like that and restart it.</p>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><o:p>&nbsp;</o:p></p>
+
+<table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=615
+ style='width:461.25pt;mso-cellspacing:0cm;border:outset black 1.0pt;
+ mso-border-alt:outset black .75pt;mso-padding-alt:5.25pt 5.25pt 5.25pt 5.25pt'>
+ <COL WIDTH=599>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;mso-yfti-lastrow:yes'>
+  <td width=599 valign=top style='width:449.25pt;border:inset black 1.0pt;
+  mso-border-alt:inset black .75pt;padding:5.25pt 5.25pt 5.25pt 5.25pt'>
+  <p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  style='font-size:11.0pt;font-family:"Courier New"'># syslogd.conf spamd logs</span></p>
+  <p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  style='font-size:11.0pt;font-family:"Courier New"'>!spamd</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'>*.*
+  /var/log/spamd.log</span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><o:p>&nbsp;</o:p></p>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'>Now we have
+fully configured spamassasin and the last step is to activate it. To achive
+this we first stop qmail-smtpd and qmail-send</p>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><o:p>&nbsp;</o:p></p>
+
+<table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=615
+ style='width:461.25pt;mso-cellspacing:0cm;border:outset black 1.0pt;
+ mso-border-alt:outset black .75pt;mso-padding-alt:5.25pt 5.25pt 5.25pt 5.25pt'>
+ <COL WIDTH=599>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;mso-yfti-lastrow:yes'>
+  <td width=599 valign=top style='width:449.25pt;border:inset black 1.0pt;
+  mso-border-alt:inset black .75pt;padding:5.25pt 5.25pt 5.25pt 5.25pt'>
+  <p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  style='font-size:11.0pt;font-family:"Courier New"'># svc –d
+  /service/qmail-smtpd</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'># svc –d
+  /service/qmail-send</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'># svstat /service/* </span></p>
+  <p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><i><span
+  style='font-size:11.0pt;font-family:"Courier New"'>/service/qmail-send: down
+  5 seconds, normally up</span></i><br>
+  <i><span style='font-size:11.0pt;font-family:"Courier New"'>/service/qmail-smtpd:
+  down 9 seconds, normally up</span></i></p>
+  </td>
+ </tr>
+</table>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'>Then we will
+modify the /var/qmail/bin/qmail-queue which is a symbolic link after the
+installation of qsheff.</p>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><o:p>&nbsp;</o:p></p>
+
+<table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=615
+ style='width:461.25pt;mso-cellspacing:0cm;border:outset black 1.0pt;
+ mso-border-alt:outset black .75pt;mso-padding-alt:5.25pt 5.25pt 5.25pt 5.25pt'>
+ <COL WIDTH=599>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;mso-yfti-lastrow:yes'>
+  <td width=599 valign=top style='width:449.25pt;border:inset black 1.0pt;
+  mso-border-alt:inset black .75pt;padding:5.25pt 5.25pt 5.25pt 5.25pt'>
+  <p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  style='font-size:11.0pt;font-family:"Courier New"'># unlink
+  /var/qmail/bin/qmail-queue</span><br>
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'>
+Add following lines to /var/qmail/bin/qmail-queue.
+</p>
+  <span style='font-size:11.0pt;font-family:"Courier New"'>
+#!/bin/sh<BR>
+<BR>
+/usr/local/bin/spamc | /var/qmail/bin/qmail-qsheff<BR>
+</span>
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'>
+Then set permissions:
+</P>
+ <span style='font-size:11.0pt;font-family:"Courier New"'>
+# chmod 755 /var/qmail/bin/qmail-queue<BR>
+# ls –la
+  /var/qmail/bin/qmail-queue</span></p>
+  <p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><i><span
+  style='font-size:11.0pt;font-family:"Courier New"'>-rwxr-xr-x 1 root qmail 63
+  Jun 26 01:13 qmail-queue</span></i></p>
+  </td>
+ </tr>
+</table>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'>Now everything
+installed and we can add a qsheff.rules (/usr/local/etc/qsheff/qsheff.rules)
+directive that commands qsheff to reject every email that has SPAMMSG in their
+subject. </p>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><o:p>&nbsp;</o:p></p>
+
+<table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=615
+ style='width:461.25pt;mso-cellspacing:0cm;border:outset black 1.0pt;
+ mso-border-alt:outset black .75pt;mso-padding-alt:5.25pt 5.25pt 5.25pt 5.25pt'>
+ <COL WIDTH=599>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;mso-yfti-lastrow:yes'>
+  <td width=599 valign=top style='width:449.25pt;border:inset black 1.0pt;
+  mso-border-alt:inset black .75pt;padding:5.25pt 5.25pt 5.25pt 5.25pt'>
+  <p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'>s:(SPAMMSG)</p>
+  </td>
+ </tr>
+</table>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'>Note that
+after qsheff-1.0 configuration files all located under /usr/local/etc/qsheff
+and the configuration file layout has changed thus you MUST NOT use the old
+qsheff configuratin files (the ones that are prior to qsheff-1.0)</p>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'>Yes all
+configured next we should start our qmail </p>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><o:p>&nbsp;</o:p></p>
+
+<table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=615
+ style='width:461.25pt;mso-cellspacing:0cm;border:outset black 1.0pt;
+ mso-border-alt:outset black .75pt;mso-padding-alt:5.25pt 5.25pt 5.25pt 5.25pt'>
+ <COL WIDTH=599>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;mso-yfti-lastrow:yes'>
+  <td width=599 valign=top style='width:449.25pt;border:inset black 1.0pt;
+  mso-border-alt:inset black .75pt;padding:5.25pt 5.25pt 5.25pt 5.25pt'>
+  <p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  style='font-size:11.0pt;font-family:"Courier New"'># svc –u
+  /service/qmail-smtpd</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'># svc –u
+  /service/qmail-send</span><br>
+  <span style='font-size:11.0pt;font-family:"Courier New"'># svstat /service/* </span></p>
+  <p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><i><span
+  style='font-size:11.0pt;font-family:"Courier New"'>/service/qmail-send: up
+  (pid 43866) 525 seconds</span></i><br>
+  <i><span style='font-size:11.0pt;font-family:"Courier New"'>/service/qmail-smtpd:
+  up (pid 43877) 523 seconds</span></i></p>
+  </td>
+ </tr>
+</table>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'>To watch the
+logs that SPAMMSG subjects are rejected look at the qsheff log file:</p>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><o:p>&nbsp;</o:p></p>
+
+<table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=615
+ style='width:461.25pt;mso-cellspacing:0cm;border:outset black 1.0pt;
+ mso-border-alt:outset black .75pt;mso-padding-alt:5.25pt 5.25pt 5.25pt 5.25pt'>
+ <COL WIDTH=599>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;mso-yfti-lastrow:yes'>
+  <td width=599 valign=top style='width:449.25pt;border:inset black 1.0pt;
+  mso-border-alt:inset black .75pt;padding:5.25pt 5.25pt 5.25pt 5.25pt'>
+  <p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><b><span
+  style='font-size:11.0pt;font-family:"Courier New"'># tail –f
+  /var/log/qsheff.log</span></b></p>
+  <p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><i><span
+  style='font-size:11.0pt;font-family:"Courier New"'>Jun 26 20:33:55 fuzuli
+  qsheff[44507]: SUBJ, queue=q-1119832431-148986-44507, recvfrom=version 3.0.4,
+  from=ThorneSha@jsads.com, </span></i><i><u><span style='font-size:11.0pt;
+  font-family:"Courier New";color:blue'>to=xx@xx.com</span></u></i><i><span
+  style='font-size:11.0pt;font-family:"Courier New"'> , subj=`SPAMMSG Amazing
+  News', spam=`SPAMMSG Amazing News', rule=`(SPAMMSG)'</span></i></p>
+  </td>
+ </tr>
+</table>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'>As you can see
+this message was blocked. If you want some domains to send you email even if
+they are detected as spam with spamassassin then you should configure
+qsheff.wblist file after activating wblist feature in qsheff (which is active
+by default with qsheff-1.0b ). For example this line in qsheff.wblist accepts
+email even if the email’s subject contains SPAMMSG from deneme.com domain.</p>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><o:p>&nbsp;</o:p></p>
+
+<table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=615
+ style='width:461.25pt;mso-cellspacing:0cm;border:outset black 1.0pt;
+ mso-border-alt:outset black .75pt;mso-padding-alt:5.25pt 5.25pt 5.25pt 5.25pt'>
+ <COL WIDTH=599>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;mso-yfti-lastrow:yes'>
+  <td width=599 valign=top style='width:449.25pt;border:inset black 1.0pt;
+  mso-border-alt:inset black .75pt;padding:5.25pt 5.25pt 5.25pt 5.25pt'>
+  <p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  style='font-family:"Courier New"'>ACCEPT @deneme.com</span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><o:p>&nbsp;</o:p></p>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'>If you want to
+bypass it using their IP addresses add it like that to qsheff.wblist</p>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><o:p>&nbsp;</o:p></p>
+
+<table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=615
+ style='width:461.25pt;mso-cellspacing:0cm;border:outset black 1.0pt;
+ mso-border-alt:outset black .75pt;mso-padding-alt:5.25pt 5.25pt 5.25pt 5.25pt'>
+ <COL WIDTH=599>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;mso-yfti-lastrow:yes'>
+  <td width=599 valign=top style='width:449.25pt;border:inset black 1.0pt;
+  mso-border-alt:inset black .75pt;padding:5.25pt 5.25pt 5.25pt 5.25pt'>
+  <p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  style='font-family:"Courier New"'>ACCEPT 192.168.1.</span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'>Now you can
+use qsheff with spamassassin. </p>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'>26/06/2005</p>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'>Omer Faruk Sen<br>
+EnderUNIX Software Development Team @ Tr<br>
+ofsen || enderunix . org<br>
+<a href="http://www.faruk.net/">http://www.faruk.net/</a></p>
+
+<p class=western style='margin-bottom:0cm;margin-bottom:.0001pt'><o:p>&nbsp;</o:p></p>
+
+</div>
+
+</body>
+
+</html>

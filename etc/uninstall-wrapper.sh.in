@@ -1,0 +1,84 @@
+#!/bin/sh
+#
+# b$, http://www.enderunix.org/simsek/
+#
+
+echo ">>> Uninstalling qSheff wrapper <<<"
+echo
+if [ @QMAILQUEUE@ -eq 1 ]; then
+	rm -f @QMAILDIR@/bin/qmail-qsheff
+	exit 0
+fi
+
+if [ ! -d @QMAILDIR@ ]; then
+  echo "! @QMAILDIR@ is not a directory or does not exist!"
+  echo "! qmail root directory couldn't be found!"
+  exit 1
+fi
+
+echo "* qmail root directory is @QMAILDIR@"
+
+echo -n "- Removing qSheff link... "
+if [ -h @QMAILDIR@/bin/qmail-queue ]; then
+  rm -f @QMAILDIR@/bin/qmail-queue 1> /dev/null 2> /dev/null
+  echo "ok"
+else
+  echo "failed"
+  echo "! qmail-queue is not a link. Probably qSheff wrapper has already uninstalled."
+  exit 1
+fi
+
+echo -n "- Moving back the original qmail-queue... "
+if [ -x @QMAILDIR@/bin/qmail-queue.orig ]; then
+  mv @QMAILDIR@/bin/qmail-queue.orig @QMAILDIR@/bin/qmail-queue 1> /dev/null 2> /dev/null
+  if [ $? -ne 0 ]; then
+  	echo "failed"
+  	echo "! ERROR: qmail-queue.orig couldn't be moved as qmail-queue."
+  	echo -n "- Trying to move qmail-queue.orig.2 "
+  	mv @QMAILDIR@/bin/qmail-queue.orig.2 @QMAILDIR@/bin/qmail-queue 1> /dev/null 2> /dev/null
+  	if [ $? -ne 0 ]; then
+		echo "failed"
+  		echo "! TROUBLE: qmail-queue.orig.2 couldn't be moved as qmail-queue."
+  		echo "* Move original qmail-queue to @QMAILDIR/bin/qmail-queue manually."
+	else
+		echo "ok"
+  	fi
+  else
+	echo "ok"
+	if [ $? -ne 0 ]; then
+		echo "! chmod error."
+		echo "! IMPORTANT: Check the permissions of qmail-queue"
+		echo "! It should be -rws--x--x"
+		echo "If not, type 'chmod 4511 @QMAILDIR@/bin/qmail-queue'"
+	fi
+  	chown qmailq:@QMAILGROUP@ @QMAILDIR@/bin/qmail-queue
+  	chmod 4511 @QMAILDIR@/bin/qmail-queue
+  fi
+else
+  echo "failed"
+  echo "! Couldn't find executable qmail-queue.orig."
+  echo "- Creating qsheff link again."
+  ln -s @QMAILDIR@/bin/qmail-qsheff @QMAILDIR@/bin/qmail-queue
+  exit 1
+fi
+
+echo "- Removing tempdir... ok" 
+rm -rf /var/qsheff/tmp/
+rm -rf /var/qsheff/spool/
+rm -f @QMAILDIR@/bin/qmail-qsheff
+rm -f @prefix@/etc/qsheff/install-wrapper.sh
+rm -f @prefix@/etc/qsheff/uninstall-wrapper.sh
+
+echo
+echo ">>> If you don't need anymore, remove qsheff directory! [/var/qsheff/]"
+echo
+echo
+echo "Good bye."
+echo
+echo "EnderUNIX Software Development Team @ Turkey"
+echo "http://www.enderunix.org/qsheff/"
+echo
+echo
+
+exit 0
+

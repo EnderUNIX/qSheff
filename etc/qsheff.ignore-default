@@ -1,0 +1,22 @@
+#
+# qSheff ignore file
+#
+# -b$
+#
+# This file contains From addresses or IPs which
+# will be ignored by the spam filters.
+#
+# You can use regular expressions.
+#
+# Notice that, you cannot avoid the virus scanning.
+#
+
+
+# Examples
+#
+# 192.168.1.8[1-9]
+# safe-sender@domain.com
+# [0-9]@mybank.com
+#
+
+

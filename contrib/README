@@ -1,0 +1,16 @@
+Contributed Patches:
+
+qmail has many patches contributed by open source world.
+Check the http://www.qmail.org/top.html
+
+I included just followings:
+
+qq-custom-error-patch.diff: Allows you to define custom smtp errors.
+
+qq-patch.diff: Allows you to execute a binary specified by the QMAILQUEUE environment.
+
+qsheff-patch.diff: Mixed version of above two patches. Allows you to define
+custom smtp errors and executing bin/qmail-qsheff directly as qmail-queue.
+
+-b$
+

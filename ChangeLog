@@ -1,0 +1,115 @@
+#
+# $Id: ChangeLog,v 1.5 2007/06/18 07:13:49 simsek Exp $
+#
+
+* 2.1-r3
+- Minor bug fixes. (simsek, 2007/04/12)
+  http://www.enderunix.org/bugzilla/show_bug.cgi?id=13
+  http://www.enderunix.org/bugzilla/show_bug.cgi?id=14
+- Solaris compile problem fixed. (simsek, 2006/12/05)
+  http://www.enderunix.org/bugzilla/show_bug.cgi?id=5
+
+* 2.1-r2
+- Become FreeBSD port compatible. (simsek, 2006/11/18)
+  http://www.enderunix.org/bugzilla/show_bug.cgi?id=6 
+- Fixed some typos about the custom prog feature. (simsek, 2006/08/25)
+  http://www.enderunix.org/bugzilla/show_bug.cgi?id=2
+- the quarantine problem fixed. (simsek, 2006/08/09)
+  http://www.enderunix.org/bugzilla/show_bug.cgi?id=10
+- Now qSheff can handle separate blackholes for spams and viruses. (simsek, 2006/07/22)
+  http://www.enderunix.org/bugzilla/show_bug.cgi?id=4
+
+* 2.1-r1
+- Added new log field: Rejected file name by attach filter. (simsek, 2006/06/06)
+- Now qSheff performs virus checking before than spam checking. (simsek, 2006/06/06)
+
+* 2.1
+- Autotool macros are improved. (simsek, 2006/04/29)
+- Syslog facility as wall as qsheff.log (simsek, 2006/04/28)
+- X-qSheff-Match: virus/spam (simsek, 2006/04/27)
+- Virus tagging (simsek, 2006/04/27)
+- Custom program interface is improved. (simsek, 2006/07/15)
+- Introduced to ignore list. (simsek, 2006/04/09)
+- wblist module has removed. (simsek, 2006/04/08)
+- Custom program can get qSheff internal variables as parameters. (simsek, 2006/04/07)
+- Introduced to djb.c which includes some functions written by DJB. (simsek, 2006/04/01)
+- Permission problem with clamd has solved. (simsek, 2004/03/22)
+- Fixed the snprintf problem. (simsek, 2006/03/15)
+- Fixed the growing spool problem in qsheff-2.0. (simsek, 2006/03/14)
+- Flexible header filter instead of subject filter. (simsek, 2006/02/29)
+- The code has forked as qsheff-II. (simsek, 2006/02/29)
+
+* 2.0
+- Code cleaning. (simsek, 2006/02/27)
+- Subject tagging as well as mail rejecting. (simsek, 2006/02/25)
+- New configure option to set ClamAv installation prefix. (simsek, 2006/02/21)
+- qsheff patch instead of qmailqueue_patch and custom error patch (simsek, 2006/02/21)
+- Could enable/disable spam filters for the local users. (simsek, 2006/02/08)
+- Sub-directories under quarantine to solve 32K files limit. (simsek, 2006/02/04)
+- Custom SMTP error message feature (simsek, 2006/02/02)
+- Full POSIX regular expression support (simsek, 2006/02/01)
+
+* 1.0-r5
+- Internal ClamAv daemon interface. qsheff.log includes virus name. (simsek, 2006/27/01)
+- Not logging MAILER-DAEMON mails. (simsek, 2006/27/01
+- Introduced qsheff directory. /var/qsheff (simsek, 2006/26/01)
+- Backup and quarantine options. (simsek, 2006/26/01)
+- Fixed logical error in quarantine and save_all. (simsek, 2006/26/01)
+- drop_empty_to chaned to drop_empty_line which includes From: line too. (simsek, 2006/26/01)
+- Attach filter is now case insensitive. (simsek, 2005/11/20)
+
+* 1.0-r4
+- Fixed some memory leak errors and some other warnings. (simsek, 2005/10/10)
+- Separated wblist for incoming and outgoing mails. (simsek, 2005/09/27)
+- Added wilcard domain name support as well as exact domain names. (simsek, 2005/10/07)
+
+* 1.0-r3
+- Could perform filtering in the message header. (simsek, 2005/08/14)
+- Could drop empty To lines. (simsek, 2005/08/12)
+- Using install/uninstall scripts for flexible installation. (simsek, 2005/07/25)
+- Recvfrom ip is getting from qmail environment during SMTP dialog. (simsek, 2005/07/08)
+- Added debug level option. (simsek, 2005/07/08)
+
+* 1.0 (2005/07/03)
+- Could perform body scanning. (simsek)
+- Could check the attachments. (simsek)
+- Logs the spam word itself along with the rule used to identify this word. (simsek)
+- Also logs emails other than spam ones. (simsek)
+- Also logs emails catched by wblist with ACCEPT a rule. (simsek)
+- Could define custom filter program for your custom necessity. (simsek)
+- [n?] like rule forms is not supported any more. It supports just [?] (simsek)
+- Could save all incoming/outgoing emails. (For debugging purpose, be carefull!!!) (simsek)
+- Installation with GNU autotools (ozkan @ enderunix)
+
+* 0.8-r7 (2005/06/09)
+- Fixed a bug which crashes program in wblist module (simsek, 2005/06/09)
+  qsheff couldn't remove workdir because of this bug.
+
+* 0.8-r6 (2005/06/06)
+- Smtp parser has been renewed. It uses Sheff's parser (simsek, 2005/06/06)
+- Smtp parser does not look for HELO in header lines. (For spamass users) (simsek, 2004/05/20)
+- wblist couldn't handle @domain.com rules. Fixed. (simsek, 2005/05/15)
+
+* 0.8-r3 (2004/12/27)
+- Fixed rrm_dir(), because of it couldn't remove files start with dot (.) (simsek, 2004/12/26)
+- Added conf-qmailgroup file (simsek, 2004/12/26)
+- Added X-Mail-Scanner to header (simsek, 2004/12/25)
+- Added multi-level and sensitive qsheff rules feature (simsek, 2004/12/24)
+
+* 0.8 (2004/12/15)
+- MRTG reporting of spammer avctivity, simsek
+- Detailed logging, aboy, simsek
+- SMTP header parser, aboy
+- Internal subject filter, simsek
+- Dropping mails with malformed headers, simsek
+- White/Black lists, aboy
+- Interoperability with various Antivirus / Spam software, simsek
+- Quarantine, simsek
+
+* 0.7b (2004-10-09)
+- Added uninstall.sh script, simsek
+- Improved error handling, simsek
+- Added errno.h for portability, simsek
+
+* 0.6b (2004-10-05)
+- First release, simsek

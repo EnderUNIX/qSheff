@@ -1,0 +1,111 @@
+#!/bin/sh
+#
+# b$, http://www.enderunix.org/simsek/
+#
+
+echo ">>> Installing qSheff wrapper <<<"
+echo
+
+if [ ! -d @QMAILDIR@ ]; then
+  echo "! @QMAILDIR@ is not a directory or does not exist!"
+  echo "! qmail root directory couldn't be found!"
+  exit 1
+fi
+
+echo "* qmail root directory is @QMAILDIR@"
+
+if [ -h @QMAILDIR@/bin/qmail-queue ]; then
+  link=`ls -l @QMAILDIR@/bin/qmail-queue | cut -d'>' -f2 | cut -c2-`
+  echo "* qmail-queue is a link to $link"
+  echo "* Probably you have another wrapper."
+  echo "! Please uninstall it first."
+  exit 1
+fi
+
+echo -n "- Creating /var/qsheff directories..."
+
+mkdir -p /var/qsheff/spool
+if [ $? -eq 0 ]; then
+  echo " ok"
+else
+  echo " failed"
+  exit 1
+fi
+
+mkdir -p /var/qsheff/tmp
+
+mkdir -p /var/qsheff/backup
+mkdir -p /var/qsheff/backup/0
+mkdir -p /var/qsheff/backup/1
+mkdir -p /var/qsheff/backup/2
+mkdir -p /var/qsheff/backup/3
+mkdir -p /var/qsheff/backup/4
+mkdir -p /var/qsheff/backup/5
+mkdir -p /var/qsheff/backup/6
+mkdir -p /var/qsheff/backup/7
+mkdir -p /var/qsheff/backup/8
+mkdir -p /var/qsheff/backup/9
+mkdir -p /var/qsheff/backup/A
+mkdir -p /var/qsheff/backup/B
+mkdir -p /var/qsheff/backup/C
+mkdir -p /var/qsheff/backup/D
+mkdir -p /var/qsheff/backup/E
+mkdir -p /var/qsheff/backup/F
+mkdir -p /var/qsheff/backup/x
+
+mkdir -p /var/qsheff/quarantine
+mkdir -p /var/qsheff/quarantine/0
+mkdir -p /var/qsheff/quarantine/1
+mkdir -p /var/qsheff/quarantine/2
+mkdir -p /var/qsheff/quarantine/3
+mkdir -p /var/qsheff/quarantine/4
+mkdir -p /var/qsheff/quarantine/5
+mkdir -p /var/qsheff/quarantine/6
+mkdir -p /var/qsheff/quarantine/7
+mkdir -p /var/qsheff/quarantine/8
+mkdir -p /var/qsheff/quarantine/9
+mkdir -p /var/qsheff/quarantine/A
+mkdir -p /var/qsheff/quarantine/B
+mkdir -p /var/qsheff/quarantine/C
+mkdir -p /var/qsheff/quarantine/D
+mkdir -p /var/qsheff/quarantine/E
+mkdir -p /var/qsheff/quarantine/F
+mkdir -p /var/qsheff/quarantine/x
+
+if [ @QMAILQUEUE@ -eq 0 ]; then
+	echo -n "- Moving qmail-queue to @QMAILDIR@/bin/qmail-queue.orig... "
+	if [ -x @QMAILDIR@/bin/qmail-queue ]; then
+	  cp -pf @QMAILDIR@/bin/qmail-queue @QMAILDIR@/bin/qmail-queue.orig.2
+	  cp -pf @QMAILDIR@/bin/qmail-queue @QMAILDIR@/bin/qmail-queue.orig 1> /dev/null 2> /dev/null
+	  chmod 4511 @QMAILDIR@/bin/qmail-queue.orig
+	  if [ $? -eq 0 ]; then
+	    echo "ok"
+	  else
+	    echo "failed"
+	    exit 1
+	  fi
+	  rm -f @QMAILDIR@/bin/qmail-queue
+	fi
+
+	echo -n "- Creating qmail-queue link to @QMAILDIR@/bin/qmail-qsheff... "
+	ln -s @QMAILDIR@/bin/qmail-qsheff @QMAILDIR@/bin/qmail-queue 1> /dev/null 2> /dev/null
+	if [ $? -eq 0 ]; then
+	  echo "ok"
+	else
+	  echo "failed"
+	  echo "! qmail-queue is moving back..."
+	  rm -f @QMAILDIR@/bin/qmail-queue
+	  cp -f @QMAILDIR@/bin/qmail-queue.orig @QMAILDIR@/bin/qmail-queue
+	  exit 1
+	fi
+fi
+
+echo
+echo "  (C) Copyright 2004-2006 Baris Simsek, http://www.enderunix.org/simsek/"
+echo
+echo "  EnderUNIX Software Development Team @ Turkey"
+echo "  http://www.enderunix.org/qsheff/"
+echo
+
+
+

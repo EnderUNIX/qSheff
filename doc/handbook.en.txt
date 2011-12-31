@@ -1,0 +1,480 @@
+    Copyright (c)  2004-2006  Baris Simsek @ EnderUNIX
+    Permission is granted to copy, distribute and/or modify this document
+    under the terms of the GNU Free Documentation License, Version 1.2
+    or any later version published by the Free Software Foundation;
+    with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+    A copy of the license is included in the section entitled "GNU
+    Free Documentation License".
+
+
+
+qSheff Handbook
+
+$Id: handbook.en.txt,v 1.1.1.1 2006/07/21 08:59:27 simsek Exp $
+
+
+
+
+
+Contents:
+
+ 1. Legal Issues
+ 2. What is qSheff?
+ 3. Working Theory
+ 4. Platform Support
+ 5. Installing
+ 6. Configuration
+ 7. Using
+ 8. Get Help
+ 9. FAQ
+10. Support
+11. Author
+12. Thanks
+
+
+
+
+
+1. LEGAL ISSUES
+
+This document is licensed under "GNU Free Documentation License". Author
+disclaim responsibility or liability for any special, incidental, indirect or
+consequential damages of any kind or loss of data because of the use of this
+document.
+
+
+2. WHAT IS qSheff?
+
+qSheff is a content scanner which can work with qmail e-mail server. It can
+also be used as qmail-queue interface to execute other content scanners.
+E-mails that contains spam or virus are blocked at SMTP level. Transfers clean
+e-mails to queue.
+
+Because qSheff runs at SMTP level, it fairly reduces servers load by cutting
+e-mails before entering queue. For the best performance, it's fully coded in
+pure C language.
+
+qSheff offers much better features than alternatives.
+
+Features:
+
+ . ClamAv antivirus (With direct domain-socket communication)
+ . Option to run external content filter or antivirus (custom program)
+ . Ability to pass internal variables to external programs in the form
+   of %%mailfrom%%, %%mailto%%, %%remoteip%%, %%msgfile%% and %%tempdir%%
+ . Header and body filtering with the support of regular expressions
+ . Attachment filtering
+ . Protecting e-mails from predefined origin with ignore list (ignore list)
+ . Quarantine support for spam and virus
+ . Ability to store all e-mail traffic to local disk
+ . Subject tagging for MUA's to write their own filters
+ . Deleting content of infected e-mails and delivering to user with subject
+   tag and predefined message
+ . Blocking e-mails with broken headers
+ . Detailed logging within one line
+ . Logging to custom file or to syslog server
+ . Clean C source code which is open to further development
+ . Easy error detection and debugging
+ . Ability to run with qmail-queue symbolic link after qmailqueue patch
+ . Support for custom error patch. Can respond with user-defined error codes,
+   can return the name of the virus or spam-catching rule
+ . Ability to inactivate filtering for e-mails from local
+ . Basic countermeasures for DOS attacks
+
+
+3. WORKING THEORY
+
+Without any plugins, qSheff can work like described below:
+
+SMTP  --> tcpserver --> qmail-smtpd --
+                                      | 
+                                       --> qmail-queue --> 
+                                      |
+Local --> MUA --> qmail-inject -------
+
+
+A qmail system with qsheff installed is shown below:
+
+SMTP  --> tcpserver --> qmail-smtpd --
+                                      | 
+                                       --> qSheff --> qmail-queue --> 
+                                      |
+Local --> MUA --> qmail-inject -------
+
+qmail picture: http://www.nrg4u.com/qmail/the-big-qmail-picture-103-p1.gif
+
+In qmail, e-mail can enter queue in two ways: 1. If e-mail is from remote SMTP
+server, with qmail-smtpd, 2. If e-mail from local user, with qmail-inject.
+In both ways an e-mail enters queue through qmail-queue. qSheff stays on this
+common point and directs all e-mail traffic to itself. There are to ways to
+insert qSheff between qmail-queue and qmail-smtpd/qmail-inject
+
+a. qmail-queue is renamed to qmail-queue.orig and qmail-queue is symbolic-
+   linked to qSheff:
+
+   # mv /var/qmail/bin/qmail-queue /var/qmail/bin/qmail-queue.orig
+   # ln -s /var/qmail/bin/qmail-qsheff /var/qmail/bin/qmail-queue
+
+   From this point, when qmail-smtpd or qmail-inject tried to run qmail-queue,
+   qSheff is run with symbolic link and e-mail is delivered to qSheff via 
+   standart input. After processing own tasks, qSheff runs qmail-queue.orig and
+   delivers e-mail from standart output. E-mail goes its way likewise.
+
+b. qmail is patched with qmailqueue patch. This patch is included within qSheff
+   distribution under contrib/ folder. With this patch qmail checks for 
+   QMAILQUEUE environment variable and runs the program claimed there. If
+   QMAILQUEUE is defined as /var/qmail/bin/qmail-qsheff, qSheff is run by
+   qmail-smtpd or qmail-inject directly. After processing own tasks, qSheff
+   runs qmail-queue and delivers via standart output. E-mail goes its way.
+
+qsheff proceeds to one of the below after processing own tasks:
+
+a. Spam or virus is found.
+
+   a) If Subject tag or virus tag is activated, subject is tagged and e-mail
+   is delivered to user. If infected, e-mail content is completely replaced
+   with a descriptive text and delivered to user afterwise.
+
+   b) If subject tag or virus tag is inactive, responds with PERMANENTLY REJECTED
+   If qmail is patched with "custom error patch", user is responded with a
+   predefined error message. If quarantine is activated, e-mail is also
+   saved to /var/qsheff/quarantine folder.
+
+
+b. There is an error
+
+   Then, responds with TEMPORARY REJECTED error.
+
+c. "enable_blackhole = 1" is set
+
+   This time, there is no remote response for the above two situations.
+
+d. E-mail is clean
+
+   E-mail is delivered to queue
+
+
+
+4. PLATFORM SUPPORT
+
+qSheff is written to run on different UNIX platforms. Systems below are teste
+successfully.
+
+Solaris 5.8 (gcc version 3.4.2)
+OpenBSD 3.5 (gcc version 3.3.2)
+FreeBSD 4.10 (gcc version 2.95.4 20020320)
+FreeBSD 5.4 (gcc version 3.4.2)
+GNU istanbuLX/Linux (gcc version 3.4.2)
+Red Hat Enterprise Linux ES release 3 (gcc version 3.2.3 20030502)
+GNU/Linux Debian (gcc 3.3.5, Debian 1:3.3.5-12)
+
+
+5. INSTALLING
+
+Installing qSheff is pretty easy. Before installing, remove other content fil-
+tering software if exists (RAV, simscan, mailscanner, old versions of qSheff..)
+Afterwards qmail-queue should be like below:
+
+# ls -l /var/qmail/bin/qmail-queue
+-rws--x--x 1 qmailq qmail 12396 Nov 28 13:18 /var/qmail/bin/qmail-queue
+
+In orter to run qSheff, "ripmime" software of PLDaniels should be installed.
+Ripmime splits e-mail into header, body and extensions parts. Ripmime can be
+downloaded from http://www.pldaniels.com/ripmime/
+
+# fetch http://pldaniels.com/ripmime/ripmime-1.4.0.6.tar.gz
+ripmime-1.4.0.6.tar.gz                        100% of  159 kB   31 kBps
+
+# tar -zxf ripmime-1.4.0.6.tar.gz
+# cd ripmime-1.4.0.6
+# make
+# make install
+# ripmime -V
+v1.4.0.6 - December 12, 2005 (C) PLDaniels http://www.pldaniels.com/ripmime
+
+Antivirus is an optional feature. qSheff, unlike other content filters, can
+connect to ClamAv directly via socket for e-mail scanning. Does not run
+client software like "clamdscan". This reduces using of system resources and
+increases performance of filtering. In order to run other antivirus or
+content scanner programs, "custom program" feature is used. Further
+information about this feature is given below.
+
+ClamAv can be downloaded and installed from http://www.clamav.net/
+
+For installing and configuring other antivirus software, check their own
+documentation.
+
+qSheff can be downloaded from official site.
+
+http://www.enderunix.org/qsheff/
+
+# fetch http://www.enderunix.org/qsheff/qsheff-II-2.1.tar.gz
+qsheff-II-2.1.tar.gz                          100% of  129 kB 5208  Bps 00m00s
+
+# tar -zxf qsheff-II-2.1.tar.gz
+# cd qsheff-II-2.1
+
+To see installing options:
+
+# ./configure --help
+  --enable-debug                 Enable debug messages
+  --disable-local-users          Disable the filters for local users
+  --enable-syslog                Enable syslog messages
+  --enable-backup                Enable backup
+  --enable-spam-tag              Enable Spam Tagging
+  --enable-virus-tag             Enable virus tagging
+  --enable-custom-error          Enable the custom error patch
+  --enable-qq-patch              Enable qmailqueue patch
+
+  --with-max-bodyline            Maximum number of lines to filter, default=40
+  --with-maxfiles                Maximum numbers of files in a dir.
+  --with-qmailgroup              Define qmail group, default=qmail
+  --with-qmaildir                Define qmail directory, default=/var/qmail
+  --with-clamav                  Enable ClamAv
+  --with-clamd-socket            Path to clamd socket, default=/tmp/clamd
+  --with-custom-prog             Enable User Defined Program, check qsheff.conf
+
+You can you any of these options.
+
+A typical installation should be like this:
+
+# ./configure --disable-local-users --with-clamav \
+    --with-clamd-socket=/var/run/clamav/clamd
+
+Options are described below. Installing should continue like this:
+
+# make && make install
+# /usr/local/etc/qsheff-II/install-wrapper.sh
+
+After installing, /var/qmail/bin folder shoul be seen like:
+
+-r-s--x--x  1 root    qmail  36766 17 May 16:57 qmail-qsheff
+lrwxr-xr-x  1 root    qmail     27 16 May 15:28 qmail-queue -> qmail-qsheff
+-r-s--x--x  1 qmailq  qmail  12396  2 May 15:43 qmail-queue.orig
+
+Options:
+
+  --enable-debug                 Enable debug messages
+    Used for printing debugging information to screen in case of any problem
+
+  --disable-local-users          Disable the filters for local users
+    qSheff filters local users by default. Bu small corporations does not
+    need this. This option deactivates this feature.
+
+  --enable-syslog                Enable syslog messages
+    Logging information is sent both to qsheff.log and to syslog. With this
+    option, logs can be stored in a remote syslog server.
+
+  --enable-backup                Enable backup
+    Enables logging all incoming/outgoing e-mail traffic
+
+  --enable-spam-tag              Enable Spam Tagging
+    Instead of rejecting spammed e-mails, qSheff tags subject and delivers
+    e-mail to user. Users can store these e-mails in a seperate folder by 
+    writing their own rules in client side.
+
+  --enable-virus-tag             Enable virus tagging
+    Infected e-mail is delivered to user after replacing content with a
+    warning text about the virus. This message is predefined as VIRI_CENSOED
+    in src/main.h. custom_sign in qsheff.conf is appended to this message
+    automatically.
+
+  --enable-custom-error          Enable the custom error patch
+    By default, qmail responds to users with "permanently error" in the case
+    of spam or virus. Usually this response does not have much information.
+    Bu option enables custom-error patch. But qmail should be patched with
+    this patch before. Predefined messages are in src/main.h like DEFAULTMSG,
+    SPAMMSG and VIRUSMSG. Messages are tagged with "SPAM" keyword or name of
+    the virus automatically.
+
+  --enable-qq-patch              Enable qmailqueue patch
+    Enables qmail-queue patch. This patch should be applied before. More infor-
+    mation is described in Chapter 3 WORKING PRINCIPLES. With this option,
+    qSheff is triggered through QMAILQUEUE environment variable, not symbolic
+    link. This environment variable usually assigned in /etc/tcp.smtp
+
+  --with-max-bodyline            Maximum number of lines to filter, default=40
+    Limits maximum number of lines in an e-mail to filter. Predefined value is
+    40. This option is a countermeasure for DOS attacks which can be caused by
+    sending very large e-mails. Spam words usually appear in first 10 lines.
+    It's not needed to scan all of the body.
+
+  --with-maxfiles                Maximum numbers of files in a dir.
+    if --enable-backup is activated, qSheff logs all e-mail traffic. Every OS
+    has limit for number of file entries in a folder. If this option is defined,
+    qSheff will switch to next folder afterwards. qSheff assumes 32000 by default.
+
+  --with-qmailgroup              Define qmail group, default=qmail
+    if qmail is installed with a group id other than "qmail", should be specified
+    here
+
+  --with-qmaildir                Define qmail directory, default=/var/qmail
+    If qmail is installed other than /var/qmail, should be specified here.
+
+  --with-clamav                  Enable ClamAv
+    Activates ClamAv antivirus software. If ClamAv is installed to nonstandart
+    folder like /opt/clamav, this folder should be specifed here. Otherwise,
+    ClamAv library functions will fail during make.
+
+  --with-clamd-socket            Path to clamd socket, default=/tmp/clamd
+    qSheff connects to ClamAv daemon directly throug UNIX socket. Path to socket
+    should be specified here if different than /tmp/clamd. Another solution is
+    changing LocalSocket variable to "/tmp/clamd" from clamd.conf
+
+  --with-custom-prog             Enable User Defined Program, check 
+    User can make qSheff run any program or script. 3rd party software, anti-
+    virus programs or your own scripts can be run this way. Full path to 
+    program/script and parameters is given as parameter. Internal variables
+    can be passed to custom program like %%mailfrom%%, %%mailto%%, %%remoteip%%,
+    %%msgfile%% ve %%tempdir%%. This parameters or path to program can be
+    changed within qsheff.conf later.
+
+
+6. CONFIGURATION
+
+qSheff configuration files are placed in etc/qsheff-II under install directory
+
+qsheff.conf:
+
+QSHEFFDIR: qSheff folder. Contaions backup, quarantine, spool and tmp folders.
+LOGFILE: Specifies the file which qSheff will write logs to.
+RIPMIME: Specifies full path to ripmime binary. Automatically detected and 
+written by qSheff in configure process.
+debug_level: Logging level. Default value is 99 and logs everything. If you
+set 14, then HEADER debugging informations will not be logged.
+   0      ERR        
+   2      QUEUE    
+   3      VIRUS   
+   5      CUSTOM 
+  11      SPAM  
+  13      ATTACH 
+  15      HEADER
+enable_blackhole: If set to 1, no response will be sent to sender of the mail
+in case of error, spam or virus
+paronia_level: Not yet implemented
+drop_empty_from: If set to 1, qSheff rejects mails without a "From:" header.
+enable_quarantine: If set to 1, spam or infected mails are quarantined.
+enable_ignore_list: If set to 1, does not filter the mail addresses and ip
+addresses in ignore list
+enable_header_filter: If set to 1, header filter is activated
+enable_body_filter: If set to 1, body filter is activated
+enable_attach_filter: If set to 1, attachment filter is activated
+enable_clamd: If set to 1, ClamAv virus checking is activated
+enable_custom_prog: If set to 1, running custom program is activated.
+CUSTOM_PROG: Spesifies the full path and parameters of custom program.
+CUSTOM_RET_MIN: The minimum return value of custom program in case of a match
+CUSTOM_RET_MAX: The maximum return value of custom program in case of a match
+For example a custom prog which returns 5 for virus and returns 9 for spam
+can be set with 5 as CUSTOM_RET_MIN and 9 as CUSTOM_RET_MAX
+CUSTOM_RET_ERR: Value which custom program returns in case of error.
+custom_sign: When virus tagging is enabled, this message is appended to the
+warning mail. Can be company logo/signature. This message is also contaions
+the information message which will be sent to user when "custom error" patch
+is applied.
+qsheff.attach: The list which attachment filter looks for matching
+qsheff.ignore: The list of e-mail and ip addresses which will not be filtered
+Regular expressions can be written. qSheff will try to match expressions
+with remote side IP and sender email address.
+qsheff.rules: Contains qSheff spesific rules. Rules beginning with "h" are
+header rules. Rules in the same line like (rule1)(rule2) are operated with
+logic AND and rules in different lines are operated with logic OR.
+
+
+7. USAGE
+
+After installing qSheff, log file should be examined in order to be sure that
+everything is fine.
+
+# tail -f /var/log/qsheff.log
+04/05/2006 19:12:39: [qSheff] SPAM, queue=q1146759159-792935-50066, relayfrom=
+88.247.172.183, from=`simsek@enderunix.org', to=`simsek@acikakademi.com', subj
+=`viagra', size=575, spam=`Subject: viagra', rule=`(Subject:)([vV]iagra)'
+
+17/05/2006 16:59:50: [qSheff] VIRUS, queue=q1147899588-883933-43385, recvfrom=
+83.26.32.122, from=`olago@neostrada.pl', to=`biwi@turx.com', subj=`Re: Merry 
+Christmas!', size=19082, virus=`Worm.Zafi.D',
+
+17/05/2006 17:03:39: [qSheff] HEADER, queue=q1147899819-136265-43522, recvfrom=
+84.50.27.182, from=`', to=`', subj=`', size=0,,
+
+If filtering local users is deactivated, attempts from server will not be logged
+in log file.
+
+If drop_empty_from=1 is set, attempts without "From:" line will be rejected and
+logged with HEADER tag.
+
+If there is an error after qSheff delivers mail to qmail-queue, qmail-queue's
+exit value will be logged as exitcode.
+
+17/05/2006 16:24:51: [qSheff] QUEUE, queue=q1147897465-631231-42376, recvfrom=
+83.17.118.150, from=`edhzovsc@queretaro.com', to=`alii@linuxxproggramlama.com',
+subj=`Fw[36]: Hi !..', size=10240, error=`', exitcode=54
+
+
+8. GET HELP
+
+Send your questions about qSheff directly to the maillist. To subscribe send
+an empty mail to qsheff-subscribe at lists.enderunix.org reply incoming approval
+mail. Maillist address is qsheff at lists.enderunix.org
+
+Maillist archive is at http://news.gmane.org/gmane.mail.qmail.qsheff. Before
+asking a question please search list archive and read this document carefully.
+Do not forget to check INSTALL and UPGRADE files which are shipped with each
+version.
+
+If maillist and documents does not help, you can contact Author directly.
+
+Commercial firms may ask for paid special development.
+
+
+9. FAQ
+
+Not yet available.
+
+
+10. SUPPORT
+
+You can support qSheff in one of the following ways:
+
+ . Provide the required books for the Author
+ . Support Author financially by ordering books from http://www.acikakademi.com
+ . Use qSheff and report bugs and wishes to Author
+ . If installed qSheff with success, provide Author following outputs:
+     # uname -a
+     # gcc -v
+     # /var/qmail/bin/qmail-qsheff -V
+ . Translate this document to your language
+
+
+11. AUTHOR
+
+qSheff has been written by Baris Simsek (simsek at enderunix org). This software
+contains patches from other contributors which are mentioned in THANKS file.
+
+
+12. THANKS
+
+To EnderUNIX for their friendship,
+To all users for valuable feedbacks.
+
+for tests:
+- Huseyin Yuce
+- Omer Faruk Sen
+- Afsin Taskiran
+
+for english documentation:
+- Doruk Fisek
+- Umut Demirhan
+- Adnan Sancak
+
+A list of contributors sent some small patches to improve qSheff.
+- Atilim Boy <aboy at enderunix.org>
+- Stephan Bielmann <stephan at stean.ch>
+
+
+
+$Id: handbook.en.txt,v 1.1.1.1 2006/07/21 08:59:27 simsek Exp $
+
+
+
+
